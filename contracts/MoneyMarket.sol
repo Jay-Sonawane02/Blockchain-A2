@@ -31,8 +31,9 @@ contract MoneyMarket is Ownable{
     constructor(
         address _vlToken,
         address _sbToken,
-        address _priceOracle
-    ) {
+        address _priceOracle,
+        address initialOwner
+    )Ownable(initialOwner) {
         require(_vlToken != address(0) && _sbToken != address(0) && _priceOracle != address(0), "zero address");
         vlToken = IERC20(_vlToken);
         sbToken = StableToken(_sbToken);
@@ -157,7 +158,61 @@ contract MoneyMarket is Ownable{
 
     //Liquidation
 
+    function liquidate(address borrower, uint256 repayAmountSB) external {
+        require(borrower!= address(0) && borrower != msg.sender,"invalid borrower");
+        require(repayAmountSB > 0,"zero repay amount");
+
+        uint256 borrowerDebt = debtBalance[borrower];
+        uint256 borrowerColl = collateralBalance[borrower];
+        require(borrowerDebt > 0 && borrowerColl >0 , "no debt/collateral");
+
+        require(getHealthFactor(borrower) < BASIS_POINTS,"borrower healthy");
+
+        uint256 maxRepay = (borrowerDebt * closeFactor) / BASIS_POINTS;
+        uint256 actualRepayAmountSB = (repayAmountSB > maxRepay) ? maxRepay : repayAmountSB;
+        require(actualRepayAmountSB>0 , "actual repay amount is zero");
+
+        uint256 priceVL = priceOracle.getAssetPrice(address(vlToken));
+        uint256 priceSB = priceOracle.getAssetPrice(address(sbToken));
+        require(priceVL > 0 && priceSB > 0,"price not set");
+
+        uint256 repayValueUSD = (actualRepayAmountSB * priceSB)/PRICE_SCALE;
+        uint256 bonusMultiplier = BASIS_POINTS + liquidationBonus;
+
+        uint256 theoreticalCollClaimUSD = (repayValueUSD * bonusMultiplier) / BASIS_POINTS;
+        uint256 theoreticalVL = (theoreticalCollClaimUSD * PRICE_SCALE) / priceVL;
+
+        uint256 seizedVL = (theoreticalVL > borrowerColl) ? borrowerColl : theoreticalVL;
+
+        uint256 debtReductionSB = actualRepayAmountSB;
+
+        if(seizedVL < theoreticalVL){
+            uint256 actualCollateralUSD = (seizedVL * priceVL) / PRICE_SCALE;
+            uint256 debtReductionUSD = (actualCollateralUSD * BASIS_POINTS) / bonusMultiplier;
+            uint256 debtReductionSB_adj = (debtReductionUSD * PRICE_SCALE) / priceSB;
+
+            debtReductionSB = (debtReductionSB_adj > actualRepayAmountSB) ? actualRepayAmountSB : debtReductionSB_adj;
+
+            
+        }
+        if(debtReductionSB > borrowerDebt){
+                debtReductionSB = borrowerDebt;
+        }
+
+        debtBalance[borrower] -= debtReductionSB;
+        collateralBalance[borrower] -= seizedVL;
+
+   
+        require(IERC20(address(sbToken)).transferFrom(msg.sender, address(this), actualRepayAmountSB), "transfer failed");
     
+        sbToken.burn(address(this), debtReductionSB);
+
+    
+        require(vlToken.transfer(msg.sender, seizedVL), "collateral transfer failed");
+
+        emit Liquidated(msg.sender, borrower, debtReductionSB, seizedVL);
+
+    }
 
 
 }

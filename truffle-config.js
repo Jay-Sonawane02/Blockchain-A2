@@ -15,7 +15,9 @@ module.exports = {
         optimizer: {
           enabled: true,
           runs: 200
-        }
+        },
+        // 💡 FIX: The 'viaIR' flag must be inside the 'settings' object.
+        viaIR: true 
       }
     }
   },

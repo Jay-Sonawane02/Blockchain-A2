@@ -3,6 +3,9 @@ pragma solidity ^0.8.21;
 import "@openzeppelin/contracts/access/Ownable.sol";
 
 contract MockPriceOracle is Ownable{
+
+    constructor(address initialOwner) Ownable(initialOwner){}
+    
     //token to price mapping
     mapping(address => uint256) public prices;
 
