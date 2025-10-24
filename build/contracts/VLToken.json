@@ -360,14 +360,14 @@
         903
       ],
       "VLToken": [
-        1974
+        1993
       ]
     },
-    "id": 1975,
+    "id": 1994,
     "nodeType": "SourceUnit",
     "nodes": [
       {
-        "id": 1950,
+        "id": 1969,
         "literals": [
           "solidity",
           "^",
@@ -380,10 +380,10 @@
       {
         "absolutePath": "@openzeppelin/contracts/token/ERC20/ERC20.sol",
         "file": "@openzeppelin/contracts/token/ERC20/ERC20.sol",
-        "id": 1951,
+        "id": 1970,
         "nameLocation": "-1:-1:-1",
         "nodeType": "ImportDirective",
-        "scope": 1975,
+        "scope": 1994,
         "sourceUnit": 800,
         "src": "28:55:9",
         "symbolAliases": [],
@@ -394,7 +394,7 @@
         "baseContracts": [
           {
             "baseName": {
-              "id": 1952,
+              "id": 1971,
               "name": "ERC20",
               "nameLocations": [
                 "172:5:9"
@@ -403,7 +403,7 @@
               "referencedDeclaration": 799,
               "src": "172:5:9"
             },
-            "id": 1953,
+            "id": 1972,
             "nodeType": "InheritanceSpecifier",
             "src": "172:5:9"
           }
@@ -412,9 +412,9 @@
         "contractDependencies": [],
         "contractKind": "contract",
         "fullyImplemented": true,
-        "id": 1974,
+        "id": 1993,
         "linearizedBaseContracts": [
-          1974,
+          1993,
           799,
           189,
           903,
@@ -427,7 +427,7 @@
         "nodes": [
           {
             "body": {
-              "id": 1972,
+              "id": 1991,
               "nodeType": "Block",
               "src": "284:144:9",
               "statements": [
@@ -436,7 +436,7 @@
                     "arguments": [
                       {
                         "expression": {
-                          "id": 1967,
+                          "id": 1986,
                           "name": "msg",
                           "nodeType": "Identifier",
                           "overloadedDeclarations": [],
@@ -447,7 +447,7 @@
                             "typeString": "msg"
                           }
                         },
-                        "id": 1968,
+                        "id": 1987,
                         "isConstant": false,
                         "isLValue": false,
                         "isPure": false,
@@ -462,11 +462,11 @@
                         }
                       },
                       {
-                        "id": 1969,
+                        "id": 1988,
                         "name": "initialSupply",
                         "nodeType": "Identifier",
                         "overloadedDeclarations": [],
-                        "referencedDeclaration": 1959,
+                        "referencedDeclaration": 1978,
                         "src": "406:13:9",
                         "typeDescriptions": {
                           "typeIdentifier": "t_uint256",
@@ -485,7 +485,7 @@
                           "typeString": "uint256"
                         }
                       ],
-                      "id": 1966,
+                      "id": 1985,
                       "name": "_mint",
                       "nodeType": "Identifier",
                       "overloadedDeclarations": [],
@@ -496,7 +496,7 @@
                         "typeString": "function (address,uint256)"
                       }
                     },
-                    "id": 1970,
+                    "id": 1989,
                     "isConstant": false,
                     "isLValue": false,
                     "isPure": false,
@@ -512,24 +512,24 @@
                       "typeString": "tuple()"
                     }
                   },
-                  "id": 1971,
+                  "id": 1990,
                   "nodeType": "ExpressionStatement",
                   "src": "389:31:9"
                 }
               ]
             },
-            "id": 1973,
+            "id": 1992,
             "implemented": true,
             "kind": "constructor",
             "modifiers": [
               {
                 "arguments": [
                   {
-                    "id": 1962,
+                    "id": 1981,
                     "name": "name_",
                     "nodeType": "Identifier",
                     "overloadedDeclarations": [],
-                    "referencedDeclaration": 1955,
+                    "referencedDeclaration": 1974,
                     "src": "270:5:9",
                     "typeDescriptions": {
                       "typeIdentifier": "t_string_memory_ptr",
@@ -537,11 +537,11 @@
                     }
                   },
                   {
-                    "id": 1963,
+                    "id": 1982,
                     "name": "symbol_",
                     "nodeType": "Identifier",
                     "overloadedDeclarations": [],
-                    "referencedDeclaration": 1957,
+                    "referencedDeclaration": 1976,
                     "src": "276:7:9",
                     "typeDescriptions": {
                       "typeIdentifier": "t_string_memory_ptr",
@@ -549,10 +549,10 @@
                     }
                   }
                 ],
-                "id": 1964,
+                "id": 1983,
                 "kind": "baseConstructorSpecifier",
                 "modifierName": {
-                  "id": 1961,
+                  "id": 1980,
                   "name": "ERC20",
                   "nameLocations": [
                     "264:5:9"
@@ -569,17 +569,17 @@
             "nameLocation": "-1:-1:-1",
             "nodeType": "FunctionDefinition",
             "parameters": {
-              "id": 1960,
+              "id": 1979,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 1955,
+                  "id": 1974,
                   "mutability": "mutable",
                   "name": "name_",
                   "nameLocation": "211:5:9",
                   "nodeType": "VariableDeclaration",
-                  "scope": 1973,
+                  "scope": 1992,
                   "src": "197:19:9",
                   "stateVariable": false,
                   "storageLocation": "memory",
@@ -588,7 +588,7 @@
                     "typeString": "string"
                   },
                   "typeName": {
-                    "id": 1954,
+                    "id": 1973,
                     "name": "string",
                     "nodeType": "ElementaryTypeName",
                     "src": "197:6:9",
@@ -601,12 +601,12 @@
                 },
                 {
                   "constant": false,
-                  "id": 1957,
+                  "id": 1976,
                   "mutability": "mutable",
                   "name": "symbol_",
                   "nameLocation": "232:7:9",
                   "nodeType": "VariableDeclaration",
-                  "scope": 1973,
+                  "scope": 1992,
                   "src": "218:21:9",
                   "stateVariable": false,
                   "storageLocation": "memory",
@@ -615,7 +615,7 @@
                     "typeString": "string"
                   },
                   "typeName": {
-                    "id": 1956,
+                    "id": 1975,
                     "name": "string",
                     "nodeType": "ElementaryTypeName",
                     "src": "218:6:9",
@@ -628,12 +628,12 @@
                 },
                 {
                   "constant": false,
-                  "id": 1959,
+                  "id": 1978,
                   "mutability": "mutable",
                   "name": "initialSupply",
                   "nameLocation": "249:13:9",
                   "nodeType": "VariableDeclaration",
-                  "scope": 1973,
+                  "scope": 1992,
                   "src": "241:21:9",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -642,7 +642,7 @@
                     "typeString": "uint256"
                   },
                   "typeName": {
-                    "id": 1958,
+                    "id": 1977,
                     "name": "uint256",
                     "nodeType": "ElementaryTypeName",
                     "src": "241:7:9",
@@ -657,19 +657,19 @@
               "src": "196:67:9"
             },
             "returnParameters": {
-              "id": 1965,
+              "id": 1984,
               "nodeType": "ParameterList",
               "parameters": [],
               "src": "284:0:9"
             },
-            "scope": 1974,
+            "scope": 1993,
             "src": "185:243:9",
             "stateMutability": "nonpayable",
             "virtual": false,
             "visibility": "public"
           }
         ],
-        "scope": 1975,
+        "scope": 1994,
         "src": "152:279:9",
         "usedErrors": [
           159,
@@ -693,7 +693,7 @@
   },
   "networks": {},
   "schemaVersion": "3.4.16",
-  "updatedAt": "2025-10-24T02:49:17.524Z",
+  "updatedAt": "2025-10-24T03:08:14.369Z",
   "devdoc": {
     "errors": {
       "ERC20InsufficientAllowance(address,uint256,uint256)": [

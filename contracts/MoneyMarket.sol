@@ -46,8 +46,14 @@ contract MoneyMarket is Ownable{
         collateralFactor = bps;
     }
 
-    function setLiquidationThreshold(uint256 bps) external onlyOwner{
-        require(bps <= 2000, "bonus too high"); // <= 20%
+    function setLiquidationThreshold(uint256 bps) external onlyOwner {
+        require(bps <= BASIS_POINTS, "invalid bps");
+        liquidationThreshold = bps;
+    }
+
+    function setLiquidationBonus(uint256 bps) external onlyOwner {
+        // small sanity bound
+        require(bps <= 2000, "bonus too high"); // <=20%
         liquidationBonus = bps;
     }
 
