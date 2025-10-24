@@ -3,7 +3,8 @@ module.exports = {
     development: {
       host: "127.0.0.1",    // Localhost
       port: 7545,           // Ganache GUI default port
-      network_id: "*",      // Match any network id
+      network_id: "5777",      // Match any network id
+      gas: 8000000,
     },
   },
 
@@ -17,7 +18,8 @@ module.exports = {
           runs: 200
         },
         // 💡 FIX: The 'viaIR' flag must be inside the 'settings' object.
-        viaIR: true 
+        viaIR: true,
+        evmVersion: "london"
       }
     }
   },
