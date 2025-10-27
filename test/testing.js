@@ -2,6 +2,7 @@ const VLToken = artifacts.require("VLToken");
 const MoneyMarket = artifacts.require("MoneyMarket");
 const StableToken = artifacts.require("StableToken");
 const MockPriceOracle = artifacts.require("MockPriceOracle");
+const fs = require("fs");
 
 
 contract("MoneyMarket", (accounts) => {
@@ -12,7 +13,7 @@ contract("MoneyMarket", (accounts) => {
     let priceOracle;
     const owner = accounts[0];
     const BN = web3.utils.BN;
-
+    
     beforeEach(async () => {
         vlToken = await VLToken.deployed();
         sbToken = await StableToken.deployed();
@@ -28,12 +29,59 @@ contract("MoneyMarket", (accounts) => {
         return accounts[Math.floor(Math.random() * 5) + 11];
     }
 
-   
+    async function get_TVL() {
+        const TVL = new BN(0);
+        for (let i = 1; i <= 10; i++) {
+            TVL.iadd(await moneyMarket.getCollateralValue(accounts[i]));
+        }
+        return TVL;
+    }
+
+    async function get_TOB() {
+        const TOB = new BN(0);
+        for (let i = 1; i <= 10; i++) {
+            TOB.iadd(await moneyMarket.getDebtValue(accounts[i]));
+        }
+        return TOB;
+    }
+
+    async function get_H() {
+        const H = [];
+        for (let i = 1; i <= 10; i++) {
+            const debt = await moneyMarket.getDebtValue(accounts[i])
+            if(!debt.isZero()){
+            H.push(await moneyMarket.getHealthFactor(accounts[i]));
+            }
+        }
+        return H.reduce((sum, value) => sum + value, 0) / H.length;
+    }
+
+    async function get_UCB() {
+        const UCB = new BN(0);
+        for (let i = 1; i <= 10; i++) {
+            const H = new BN(await moneyMarket.getHealthFactor(accounts[i]));
+            if(H.lt(new BN(10000))) {
+                UCB.iadd(await moneyMarket.getDebtValue(accounts[i]));
+            }
+        }
+        return UCB;
+    }
+
+
+    let TVL_list = [];
+    let TOB_list = [];
+    let H_list = [];
+    let CL_list = [];
+    let UCB_list = [];
 
 
     it("Simulating 100 random transactions", async () => {
     for (let i = 0; i < 100; i++) {
-        
+
+        TVL_list.push(await get_TVL());
+        TOB_list.push(await get_TOB());
+        H_list.push(await get_H());
+        UCB_list.push(await get_UCB());
         //contract owner = 0
         //general_user = 1-10
         //liquidator = 11-15
@@ -41,10 +89,15 @@ contract("MoneyMarket", (accounts) => {
         // Choose one uniformly at random
         const randomIndex = Math.floor(Math.random() * 5);
 
+        if (randomIndex != 3) { 
+            CL_list.push((CL_list.length ? CL_list[CL_list.length - 1] : 0) );
+        }
+
         // console.log(`Chosen operation index: ${randomIndex}`);
         // Call the chosen function
         switch (randomIndex) 
         {
+            //Deposit Event
             case 0:
                 {
                     const user = await get_general_user();
@@ -64,6 +117,7 @@ contract("MoneyMarket", (accounts) => {
                     }
                 }
                 break;
+            //Borrow Event
             case 1:
                 {
                     const user = await get_general_user();
@@ -87,6 +141,7 @@ contract("MoneyMarket", (accounts) => {
                     }
                 }
                 break;
+            //Repay Event
             case 2:
                 {
                     const user = await get_general_user(); 
@@ -106,6 +161,7 @@ contract("MoneyMarket", (accounts) => {
                     }
                 }
                 break;
+            //Liquidation Event
             case 3:
                 {
                     const liquidator = await get_liquidator();
@@ -114,10 +170,14 @@ contract("MoneyMarket", (accounts) => {
                             const user = accounts[j];
                             const H = await moneyMarket.getHealthFactor(user);
                             if (H.lt(new BN(10000))) {
+                                const debt_before_liquidation = await moneyMarket.getDebtValue(user);
                                 const amount = await sbToken.balanceOf(liquidator);
                                 if (amount.isZero()) continue; // skip iteration if amount is zero
                                 await sbToken.approve(moneyMarket.address, amount, { from: liquidator });
                                 await moneyMarket.liquidate(user,amount, { from: liquidator });
+                                const debt_after_liquidation = await moneyMarket.getDebtValue(user);
+                                const liquidated_amount = debt_before_liquidation.sub(debt_after_liquidation);
+                                CL_list.push((CL_list.length ? CL_list[CL_list.length - 1] : 0) + liquidated_amount);
                                 break;
                             }
                         }
@@ -130,12 +190,14 @@ contract("MoneyMarket", (accounts) => {
                     }
                 }
                 break;
+            //Market Update Event
             case 4:
                 {
                     try{
                         const currentPrice = await priceOracle.getAssetPrice(vlToken.address);
                         // console.log(`Current VLToken price: ${currentPrice.toString()}`);
                         const market_crash = Math.floor(Math.random() * 2);
+                        //Market crash
                         if (market_crash) {
                             const fraction = Math.floor((Math.random() * (0.7 - 0.4) + 0.4) * 10000);
                             const new_price = currentPrice.mul(new BN(fraction)).div(new BN(10000));
@@ -143,6 +205,7 @@ contract("MoneyMarket", (accounts) => {
                             // console.log(`Market crash! New VLToken price: ${new_price.toString()}`);
                             console.log(`Market Crash Event`);
                         }
+                        //Market gain
                         else {
                             const fraction = Math.floor((Math.random() * (0.5 - 0.1) + 0.1) * 10000);
                             const new_price = currentPrice.mul(new BN(fraction)).div(new BN(10000));
@@ -158,5 +221,18 @@ contract("MoneyMarket", (accounts) => {
                 break;
         }
         }
+    });
+
+    after(async () => {
+    const data = {
+        TVL: TVL_list.map(v => v.toString()),
+        TOB: TOB_list.map(v => v.toString()),
+        H: H_list.map(v => v.toString()),
+        UCB: UCB_list.map(v => v.toString()),
+        CL: CL_list.map(v => v.toString())
+    };
+
+    fs.writeFileSync("metrics.json", JSON.stringify(data, null, 2));
+    console.log("✅ Saved simulation data to metrics.json");
     });
 });
