@@ -57,8 +57,8 @@ module.exports = async function(deployer,network,accounts){
    console.log("MoneyMarket parameters set");
 
    //initial funding
-   for(let i=1;i<=9 && i<accounts.length;i++){
-      const amt = toWei(100); //100 VLT to each
+   for(let i=1;i<=16 && i<accounts.length;i++){
+      const amt = toWei(1000); //100 VLT to each
       await vlToken.transfer(accounts[i],amt,{from:deployerAddress});
    }
 

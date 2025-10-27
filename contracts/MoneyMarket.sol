@@ -110,7 +110,7 @@ contract MoneyMarket is Ownable{
         require(vlToken.transferFrom(msg.sender, address(this), amount),"transferFrom failed");
         collateralBalance[msg.sender] += amount;
         emit Deposited(msg.sender, amount);
-    }
+    }   
 
     function withdraw(uint256 amount) external{
         require(amount>0 , "zero amount");
